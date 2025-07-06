@@ -1,0 +1,96 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+{% load task_table %}
+
+{% block title %}Make Sheets{% endblock %}
+
+{% block body_two %}
+    <h3>Make and edit marking sheets</h3>
+    <hr>
+    
+    <div id="create-sheet">
+        <label for="sheet-type">What type of sheet is this?</label>
+        <select id="sheet-type">
+            <option value="masterlist">Masterlist</option>
+            <option value="bunks">For Bunks</option>
+            <option value="classes">For Learning Classes</option>
+        </select>
+        <hr>
+
+        <div id="masterlist-view" class="parent-view">
+            <h6>Masterlist:
+                <select style="display: inline;" id="masterlist-select" class="element-display" name="list_for">
+                    <option value="masterlist-bunk">Bunk</option>
+                    <option value="masterlist-learning_class">Learning Class</option>
+                </select>
+            </h6>
+
+            <div class="child-view" id="masterlist-bunk-view">{% task_table request bunk_tasks 'masterlist' 'bunk' %}</div>
+            <div class="child-view" id="masterlist-learning_class-view">{% task_table request class_tasks 'masterlist' 'learning_class' %}</div>
+
+        </div>
+
+        
+        <div id="bunks-view" class="parent-view">
+            <h6>Bunks</h6>
+            <label for="select-bunk">What bunk is this Sheet for?</label>
+            <select id="select-bunk" name="name" class="element-display">
+                <option value="bunkgeneric" data-view="bunkgeneric">All Bunks (generic sheet)</option>
+                {% if general.bunk_generic %}
+                    {% for bunk in bunks %}
+                        <option value="bunk-{{ bunk.id }}" data-view="bunk-{{ bunk.id }}">{{ bunk.name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            <br>
+            {% if not general.bunk_master %}
+                <p>You need to create a Bunk Masterlist first.</p>
+            {% else %}
+                <div id="bunkgeneric-view" class="child-view">
+                    {% task_table request general.bunk_generic 'bunk' 'generic' %}
+                </div>
+                {% for bunk, checklist in bunks.items %}
+                    <div id="bunk-{{ bunk.id }}-view" class="child-view bunkview">
+                        {% task_table request checklist 'bunk' bunk %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <br>
+
+        </div>
+
+        <div id="classes-view" class="parent-view">
+            <h6>Learning Class</h6>
+            <label for="select-learning-class">What class is this Sheet for?</label>
+            <select id="select-learning-class" name="name" class="element-display">
+                <option value="learning_class-generic">All Learning Classes (generic sheet)</option>
+                {% if general.class_generic %}
+                    {% for class in classes %}
+                        <option value="class-{{ class.id }}">{{ class.name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            <br>
+            {% if not general.class_master %}
+                <p>You need to create a Learning Class Masterlist first.</p>
+            {% else %}
+                <div id="learning_class-generic-view" class="child-view">
+                    {% task_table request general.class_generic 'learning_class' 'generic' %}
+                </div>
+                {% for class, checklist in classes.items %}
+                    <div id="class-{{ class.id }}-view" class="child-view learning_classview">
+                        {% task_table request checklist 'learning_class' class %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <br>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/make_sheets.js' %}"></script>
+{% endblock %}

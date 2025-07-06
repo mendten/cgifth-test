@@ -1,0 +1,81 @@
+<div class="daily-chart" id="{{ date }}">
+    <div>
+        <form id="{{ date }}-form" method="post" action="{% url 'enter_sheets' %}">
+            <table class="table table=striped checklist" data-day="{{ date }}">
+                <thead>
+                    <tr>
+                        {% for name in chart.keys %}
+                            {% if name != 'total' and name != 'today' %}
+                                <th>
+                                    <input type="hidden" name="camper" value="{{ name.id }}">
+                                    <span {% if name != 'tasks' %}class="camper-name-chart"{% else %}class="tch"{% endif %}>{{ name }}</span>
+                                    {% if name != 'tasks' %}
+                                        <button type="button" class="btn btn-sm btn-link p-0 check-all-btn" data-camper-id="{{ name.id }}" title="Check all tasks">
+                                            <i class="bi bi-check2-square"></i>
+                                        </button>
+                                    {% endif %}
+                                </th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    {% for name, lines in chart.items %}
+                    <td {% if forloop.first %}class="task-col"{% endif %}>
+                        {% if name == 'tasks' %}
+                            {% for task, line in lines.items %}
+                                <p {% if task == 'bonus' %} style="display: none;" {% endif %} value="{{ task.id }}" class="task-col-left">{{ task }} ({{ line.max_points }})</p>
+                                <input type="hidden" name="task" value="{{ task.id }}">
+                            {% endfor %}
+                            <div>Total</div>
+                        {% else %}
+                            {% for task, line in lines.items %}
+                                <div class="daily-chart-cell {% if forloop.first %}auto-fire {% endif %}" {% if task == 'bonus' %} style="display: none;" {% endif %}>
+                                    {% if line.points_type == 'checkbox' %}
+                                        <input type="hidden" value="0" name="camper-{{ name.id }}-task-{{ task.id }}" data-camper="{{ name.id }}">
+                                        <input type="checkbox" value="{{ line.max_points }}" name="camper-{{ name.id }}-task-{{ task.id }}" {% if line.points and line.points != 0 %}checked{% endif %} data-camper="{{ name.id }}">
+                                    {% else %}
+                                        <select name="camper-{{ name.id }}-task-{{ task.id }}" data-camper="{{ name.id }}">
+                                            {% if line.task.name == 'Admin total' and request.user.position != 'admin' %}
+                                                {% if line.points %}
+                                                    <option value="{{ line.points }}">{{ line.points }}</option>
+                                                {% else %}
+                                                    <option value="0">0</option>
+                                                {% endif %}
+                                            {% else %}
+                                                <option value="0">0</option>
+                                                {% with ' '|center:line.max_points as range %}
+                                                    {% for i in range %}
+                                                        <option value="{{ forloop.counter }}" {% if line.points == forloop.counter %}selected{% endif %}>{{ forloop.counter }}</option>
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            {% endif %}
+                                        </select>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="span-totals">
+                            <span class="total-points" id="camper-{{ name.id }}-{{ date }}-total"></span>
+                        </div>
+                        </td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+            <div class="hidden-input">
+                {% csrf_token %}
+                <input type="text" readonly name="marker" value="{{ request.user.id }}">
+                <input type="text" readonly name="day" value="{{ date|date:'Y-m-d' }}">
+                {% if request.user.position != 'admin' %}
+                    <input type="text" readonly name="from" value="index">
+                {% else %}
+                    <input type="text" readonly name="from" value="edit-points">
+                {% endif %}
+                <input type="text" readonly name="group" value="{{ group.id }}">
+            </div>
+            <input class="btn btn-outline-primary save-btn task-col" type="button" value="Save">
+        </form>
+    </div>
+</div>

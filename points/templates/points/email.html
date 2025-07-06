@@ -1,0 +1,30 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Messages{% endblock %}
+
+{% block body_two %}
+    <h4>Email parents</h4>
+    {% if message %}
+        <p role="alert" class="alert alert-secondary">{{ message }}</p>
+    {% endif %}
+    <form action="{% url 'email' %}" method="post">
+        {% csrf_token %}
+        <label for="week">Week:</label>
+        <input type="hidden" id="current" value="{{ week }}">
+        <select name="week" id="week">
+            {% for week in weeks %}
+                <option class="week-option" value="{{ week|date:'Y-m-d' }}">{{ forloop.counter }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="password">Please enter your password to send emails.</label>
+        <input id="password" type="password" name="password">
+        <br>
+        <input type="button" id="send-button" disabled class="btn btn-sm btn-secondary" value="Send Emails">
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/email.js' %}"></script>
+{% endblock %}

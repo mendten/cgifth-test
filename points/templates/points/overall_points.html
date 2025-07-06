@@ -1,0 +1,130 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Overall Points{% endblock %}
+
+{% block body_two %}
+    <div>
+        <h4>Overall Points</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th id="bunk-header" class="list">Bunk 
+                        <select id="bunk-selector">
+                            <option value="none">------</option>
+                            {% for bunk in bunks %}
+                                <option value="{{ bunk.number }}">{{ bunk.name|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    {% if camper_totals %}
+    <div style="display: none">
+        {% for bunk, data in camper_totals.items %}
+        <h1>{{ bunk }}</h1>
+            {% for date, campers in data.items %}
+                <h2>{{ date }}</h2>
+                <p class="text-muted">{{ campers }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+        {% for bunk, weeks in camper_totals.items %}
+        <div class="checklist" id="bunk-{{ bunk.number }}">
+            <h4>{{ bunk.name|title }}:
+                {% for counselor in bunk.staff.all %}
+                    <span class="counselor-name">{{ counselor|title }} {% if not forloop.last %}& {% endif %}</span>
+                {% endfor %}
+            </h4>
+            <table class="table table-striped total-table">
+                <thead class="points-header">
+                    <tr>
+                        <th></th>
+                        {% for camper in bunk.bunk_camper.all|dictsort:'last_name' %}
+                            <th><span class="camper-name-chart">{{ camper.last_name|title }}, {{ camper.first_name|title }}</span></th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week, dates in weeks.items %}
+                    <tr><td colspan="100">Week {{ week|add:'1' }}</td></tr>
+                        {% for date, campers in dates.items %}
+                            {% if date != 'weekly' and date != 'totals' %}
+                            <tr>
+                                <td class="date">{{ date|date:'D' }} CO</td>
+                                {% for camper, options in campers.items %}
+                                    <td class="camper-points">{{ options.co }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td class="date">{{ date|date:'D' }} LT</td>
+                                {% for camper, options in campers.items %}
+                                    <td class="camper-points">{{ options.lt }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                            <tr class="week-total">
+                                <td>Weekly CO</td>
+                                {% for camper, options in dates.weekly.items %}
+                                    <td class="camper-points">{{ options.co }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="week-total">
+                                <td>Weekly LT</td>
+                                {% for camper, options in dates.weekly.items %}
+                                    <td class="camper-points">{{ options.lt }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="week-total">
+                                <td>Weekly Camper</td>
+                                {% for camper, options in dates.weekly.items %}
+                                    <td class="camper-points">{{ options.camper }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% if dates.totals %}
+                            {% if not forloop.first %}
+                            <tr class="range-total">
+                                <td>Updated CO</td>
+                                {% for camper, options in dates.totals.items %}
+                                    <td class="camper-points">{{ options.co }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="range-total">
+                                <td>Updated LT</td>
+                                {% for camper, options in dates.totals.items %}
+                                    <td class="camper-points">{{ options.lt }}</td>
+                                {% endfor %}
+                            </tr>
+                            <tr class="range-total">
+                                <td>Updated Camper</td>
+                                {% for camper, options in dates.totals.items %}
+                                    <td class="camper-points">{{ options.camper }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+                            <tr class="overall-total">
+                                <td>OVERALL</td>
+                                {% for camper, options in dates.totals.items %}
+                                    <td class="camper-points">{{ options.total }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>Camp has not started yet.</p>
+        {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/overall_points.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}New Bunk/Class{% endblock %}
+
+{% block body_two %}
+    <h3>Create a new bunk or class</h3>
+    <div id="new-group">
+        <form method="POST" action="{% url 'new_group' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="group-type">Bunk, Class or just Campers</label>
+            <select name="group-type" id="group-type">
+                <option value="bunk">Bunk</option>
+                <option value="class">Class</option>
+                <option value="campers-only">Campers</option>
+            </select><br>
+
+            <div class="form-group if if-bunk if-class">
+                <label for="group-name">Name <span class="text-muted">For display, such as Bunk Aleph or Kvutza Aleph</span></label>
+                <input type="text" name="group-name" id="group-name">
+                <br>
+                <label for="group-num">Number <span class="text-muted">For the database, Aleph = 1, Beis = 2, etc.</span></label>
+                <input type="number" name="group-num" id="group-num" min="0" max="100">
+            </div>
+            <div class="form-group if if-bunk">
+                <label for="group-counselor">Counselor: </label>
+                <select name="counselor-1">
+                    {% for counselor in counselors %}
+                        {% if not counselor.group.all %}
+                            <option value="{{ counselor.id }}">{{ counselor|title }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="group-counselor">Counselor: </label>
+                <select name="counselor-2">
+                    <option value="none" class="text-muted">No Second</option>
+                    {% for counselor in counselors %}
+                        {% if not counselor.group.all %}
+                            <option value="{{ counselor.id }}">{{ counselor|title }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group if if-class">
+                <label for="group-teacher">Teacher: </label>
+                <select name="lt">
+                    {% for teacher in lts %}
+                        {% if not teacher.group.all %}
+                            <option value="{{ teacher.id }}">{{ teacher|title }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group if if-bunk">
+                <label for="campers">Campers:<br>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>First Name(s)</th>
+                            <th>Last Name</th>
+                            <th>Fathers Email</th>
+                            <th>Mothers Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in 'aaaaaaaaaaaaaaa' %}
+                            <tr>
+                                <td><input id="first-name" name="first-name" type="text"></td>
+                                <td><input id="last-name" name="last-name" type="text"></td>
+                                <td><input id="father-email" name="father-email" type="email"></td>
+                                <td><input id="mother-email" name="mother-email" type="email"></td>
+                            </tr>
+                        {% endfor %}
+                </table>
+            </div>
+            <div class="form-group if if-class">
+                <label>Select all campers in this class</label><br>
+                {% for camper in campers %}
+                    <input id="{{ camper }}" name="camper-id" type="checkbox" value="{{ camper.id }}">
+                    <label for="{{ camper }}">{{ camper|title }}</label><br>
+                {% endfor %}
+            </div>
+            <div class="form-group if if-campers-only">
+                <p><strong>This is just for adding campers to the system. You can add them to bunks/classes from the 
+                <a href="{% url 'edit_group' %}">Edit Bunks/Classes page</a>.
+                </strong></p>
+                <label for="campers">Campers:<br>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>First Name(s)</th>
+                                <th>Last Name</th>
+                                <th>Fathers Email</th>
+                                <th>Mothers Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in 'aaaaaaaaaaaaaaa' %}
+                                <tr>
+                                    <td><input id="first-name" name="c-first-name" type="text"></td>
+                                    <td><input id="last-name" name="c-last-name" type="text"></td>
+                                    <td><input id="father-email" name="c-father-email" type="email"></td>
+                                    <td><input id="mother-email" name="c-mother-email" type="email"></td>
+                                </tr>
+                            {% endfor %}
+                    </table>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/new_group.js' %}"></script>
+{% endblock %}

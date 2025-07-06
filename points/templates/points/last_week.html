@@ -1,0 +1,54 @@
+{% extends 'points/base.html' %}
+{% load static %}
+{% load daily_chart %}
+
+{% block title %}Last 7{% endblock %}
+
+{% block header %}
+    <a href="{% url 'logout' %}" class="navbar-link logout">Logout <span class="BH">ב"ה</span></a>
+{% endblock %}
+
+{% block body %}
+<div id="index-container">
+    <h1 style="color: white;">Hello</h1>
+    <div id="max-bonus" data-num="{{ max_bonus }}"></div>
+
+    <div id="header">
+        <h4>{{ user|title }}, {{ user.group.first.name|title }}</h4>
+        <a href="\..">Back</a>
+    </div>
+    <br>
+    <div id="charts">
+
+        <div id="pick-day">
+            {% for day, details in charts.items %}
+                {% if not details.total or details.total == 0 %}
+                    <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                {% elif details.today %}
+                    <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} {% if details.total != 0 %}({{ details.total }}%){% endif %}</button>
+                {% elif details.total == 'late' %}
+                    <button class="btn btn-sm btn-outline-danger day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                {% elif details.total <= 60 %}
+                    <button class="btn btn-sm btn-outline-warning day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-success day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% for date, chart in charts.items %}
+            {% daily_chart request date chart group %}
+        {% endfor %}
+        
+    </div>
+
+    <div id="footer">
+        <img src="{% static 'points/pngs/newcgiflogo.jpg' %}" alt="Camp Gan Israel Florida logo" id="newcgiflogo" class="logos">
+        <img src="{% static 'points/pngs/newthlogo.jpg' %}" alt="Tzivos Hashem logo" id="newthlogo" class="logos">
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/index_staff.js' %}"></script>
+{% endblock %}

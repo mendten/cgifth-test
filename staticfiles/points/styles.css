@@ -1,0 +1,533 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:300,400,600');
+
+h1 {
+    color: red;
+}
+
+#home-wrapper {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    z-index: -2;
+}
+
+.homepage-table tr {
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+#login-form {
+    padding-top: 20px;
+    padding-bottom: 5px;
+    background-color: rgb(230, 229, 229);
+    border-radius: 25px;
+    width: 300px;
+    margin-top: 220px;
+    margin-left:  auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.logout:hover {
+    text-decoration: none;
+}
+
+.BH {
+    color: black;
+}
+
+.BH:hover {
+    cursor: default;
+}
+
+.sidebar li {
+    width: 200px;
+    color: blue;
+}
+    
+.dropdown-menu {
+    background-color: black;
+    margin-left: 10px;
+}
+
+.sidebar {
+    position: fixed;
+    overflow: auto;
+    float: left;
+    background-color: black;
+}
+
+.sidebar-header {
+    color: white;
+    width: 170px;
+}
+
+@media (min-width: 481px){
+
+    .navbar-light {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 3;
+    }
+    
+    .navbar-toggler{
+        display: none;
+    }
+    
+    .sidebar {
+        width: 230px;
+        height: 100%;
+        z-index: 3;
+    }
+
+    #logged-in-content {
+        width: calc(96% - 230px);
+        margin-top: 58px;
+    }
+
+    .remove-list {
+        width: 40%;
+        float: left;
+    }
+
+    .add-list {
+        float: right;
+        width: 40%;
+    }
+
+    .index-chart {
+        transform: scale(0.75);
+    }
+
+    .logos {
+        width: 100px;
+    }
+
+    .homepage-table {
+        width: 40%;
+        margin: 5%;
+    }
+
+    #camper-table {
+        float: left;
+    }
+ 
+    .profile-head {
+        width: 100%;
+        height: 160px;
+    }
+}
+
+@media (max-width: 480px){
+    
+    .navbar-toggler {
+        float: right;
+        margin-right: -25px;
+        width: 60px;
+        height: 35px;
+    }
+
+    .navbar-toggler:focus {
+        outline: none;
+    }
+    
+    .menu-icon{
+        background-color: white;
+        padding: 4px;
+        border-radius: 5px
+    }
+
+    .sidebar {
+        position: relative;
+        margin-bottom: 2%;
+        width: 100%;
+        height: fit-content;
+        z-index: 1;
+    }
+
+    #logged-in-content {
+        width: 96%;
+        margin-left: 2%;
+        z-index: 0;
+    }
+    
+    .task-col div {
+        display: --webkit-inline-box;
+        display: inline-block;
+        width: max-content !important;
+        float: right;
+    }
+
+    .index-chart {
+        transform: scale(0.9);
+        overflow: auto;
+    }
+    
+    .index-name {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: white;
+    }
+
+    .save-btn {
+        float: left; 
+    }
+
+    .logos {
+        width: 140px;
+    }
+    
+    .homepage-table {
+        width: fit-content;
+        margin: auto;
+    }
+
+    .profile-head {
+        width: 100%;
+        height: 240px;
+    }
+    
+}
+
+#logged-in-content {
+    position: relative;
+    margin-right: 2%;
+    min-height: 84vh;
+}
+
+#wrapper {
+    padding-bottom: 4rem;
+}
+
+#admin-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1rem;         
+}
+
+.complete-submits, .partial-submits, .no-submits {
+    text-align: center;
+    border-radius: 10px;
+}
+
+.no-submits {
+    background-color: red;
+}
+
+.partial-submits {
+    background-color: yellow;
+}
+
+.complete-submits {
+    background-color: lightgreen;
+}
+
+#leave-blank {
+    display: inline-block;
+}
+
+#blank-sheet-table, #edit-sheet-table {
+    width: fit-content;
+}
+
+.camper-name-chart {
+    -webkit-transform: rotate(270deg);
+    transform: rotate(180deg);
+    -webkit-writing-mode: vertical-rl;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.flip-back {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+}
+
+.checklist {
+    width: fit-content;
+}
+
+.checklist .dp-cell:nth-of-type(even) {
+    background-color: lightgray !important;
+    -webkit-print-color-adjust: exact;
+}
+
+.checklist .checkbox {
+    transform: scale(1.5);
+}
+
+#index-container {
+    width: 94%;
+    margin: auto
+}
+
+#charts {
+    width: 100%;
+    margin: auto;
+}
+
+.daily-chart {
+    overflow-x:auto;
+}
+
+.daily-chart th {
+    position: sticky;
+    background-color: white;
+    top: 0;
+    z-index: 1;
+}
+
+.task-col {
+    position: sticky;
+    background-color: white;
+    left: 0;
+    z-index: 1;
+}
+
+.task-col-left {
+    white-space: nowrap;
+    height: 44px;
+    margin: 0px;
+}
+
+.task-col p:nth-of-type(even) {
+    background-color: lightgray
+}
+
+.daily-chart td {
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+.daily-chart div {
+    padding: 10px;
+}
+
+.daily-chart div:nth-of-type(even) {
+    background-color: lightgray;
+}
+  
+.hidden-input {
+    display: none;
+}
+
+.span-totals {
+    background-color: white !important;
+  }
+
+.message {
+    border: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#footer {
+    position: relative;
+    bottom: 0px;
+    width: 100%;
+    margin-top: 100px;
+}
+
+#newthlogo {
+    float: right;
+}
+
+.last-week {
+    float: left;
+}
+
+.total-table {
+    margin-bottom: 110%;
+}
+
+.total-table th {
+    padding: 0px;
+    font-size: 12px;
+}
+
+.total-table td {
+    padding: 0;
+    text-align: center;
+}
+
+.points-header th {
+    position: sticky;
+    background-color: white;
+    top: 50px;
+}
+
+.week-total td {
+    background-color: gray;
+}
+
+.overall-total {
+    position: sticky;
+    top: 180px;
+  }
+  
+.overall-total td {
+    background-color: orange; 
+    padding: 4px;
+}
+
+.range-total td {
+    background-color: yellow;
+}
+
+@media print {
+    body * {
+      visibility: hidden;
+    }
+    .printarea * {
+      visibility: visible;
+    }
+    .page-break {
+        clear: both;
+        page-break-before: always;
+        break-before: always;
+    }
+    .printarea table {
+        margin: auto;
+    }
+    .printarea #first {
+        position: absolute;
+        top: 0;
+        width: 90%;
+    }
+    .camper-name-chart {
+        transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        writing-mode: vertical-rl;
+        -webkit-writing-mode: vertical-rl;
+        text-orientation: mixed;
+    }
+    .print-hide {
+        display: none;
+    }
+    .left-pic {
+        position: absolute;
+        left:0;
+    }
+}
+
+.printarea table {
+    margin: auto;
+}
+
+.wc-printarea * {
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    text-align: center;
+}
+
+.wc-printarea .wc-name {
+    white-space: nowrap;
+  }  
+
+.wc-printarea table tr:nth-of-type(odd) td {
+  background-color: lightgray !important;
+}
+
+.printarea table {
+  border-style: solid 
+}
+
+/*  */
+.wc-border {
+  border-style: none solid;
+}
+
+/*  */
+.wc-printarea table, tr, th, td {
+    width: min-content;
+  }
+  
+/* CSS for sliding toggle switch. Goes from here... */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25.5px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 19.5px;
+    width: 19.5px;
+    right: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(-19.5px);
+    -ms-transform: translateX(-19.5px);
+    transform: translateX(-19.5px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  /* ...until here. */
+
+#profile-page {
+    margin: 5%;
+}
+
+.pic {
+    float: left;
+    margin-right: 5%;
+}
+
+.profile-bH {
+    float: right;
+}
+
+#add-new-task-template {
+    display: none;
+    background-color: red;
+    color: blue;
+}

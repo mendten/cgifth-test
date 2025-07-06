@@ -1,0 +1,77 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Messages{% endblock %}
+
+{% block body_two %}
+    <h4>Send and View Messages</h4>
+    <div class="row">
+
+        <div id="send-view" class="col">
+            <h6>Send a Message</h6>
+            <form method="post" action="{% url 'message' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send">
+                <label for="to">Who is this message for?</label>
+                <select name="to" id="to">
+                    <option value="all">All Staff</option>
+                    <option value="counselors">All Counselors</option>
+                    <option value="teachers">All Teachers</option>
+                    <option value="specific">Specific Staff</option>
+                </select>
+                <br>
+                <div id="specific-view" style="display:none;">
+                    <label for="specific-staff">Select which staff this message is for:</label>
+                    <br>
+                    <p>
+                    {% for bunk in bunks %}
+                        <strong>{{ bunk.name|title }}</strong>
+                        {% for c in bunk.staff.all %}
+                            <input type="checkbox" name="specific-staff" value="{{ c.id }}">
+                            <label for="specific-staff">{{ c }}</label>
+                        {% endfor %}
+                        <br>
+                    {% endfor %}
+                    {% for class in classes %}
+                        <strong>{{ class.name|title }}</strong>
+                            <input type="checkbox" name="specific-staff" value="{{ class.staff.all.0.id }}">
+                            <label for="specific-staff">{{ class.staff.all.0 }}</label>
+                        <br>
+                    {% endfor %}
+                    </p>
+                </div>
+                <br>
+                <label for="content">Message Text</label><br>
+                <textarea name="content" id="content" cols="30" rows="5"></textarea>
+                <br>
+                <input class="btn btn-primary" type="submit" value="Send">
+            </form>
+        </div>
+
+        <div class="col">
+            <h6>View Messages</h6>
+            <div id="message-view">
+                {% for message in messages %}
+                <div class="message">
+                    {{ message.date|date:'l g:t A'  }}, {{ message.sender }}<br>
+                    {% if message.reply_to %}
+                        <strong>Reply to:</strong> {{ message.reply_to.text }}<br>
+                    {% endif %}
+                    {{ message.text }}<br>
+                    <form method="post" action="{% url 'message' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="message-id" value="{{ message.id }}">
+                        <button class="btn btn-sm btn-outline-danger btn-act">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/message.js' %}"></script>
+{% endblock %}

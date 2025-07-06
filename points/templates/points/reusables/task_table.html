@@ -1,0 +1,167 @@
+<!-- <form action="{% url 'make_sheets' %}"> -->
+{% if page == 'masterlist' %}
+<form action="{% url 'make_sheets' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ page }}">
+    <input type="hidden" name="list_for" value="{{ list_for }}">
+    <table class="table table-striped">
+        <thead>
+            <th>Sequence</th>
+            <th>Task</th>
+            <th>Points</th>
+        </thead>
+        <tbody>
+        {% if tasks.0 != 1 %}
+            {% for task in tasks %}
+                <tr class="task-line task-tbody">
+                    <td class="task-line-sequence">{{ task.sequence }}</td>
+                    {% if page != 'masterlist' %}
+                        <td class="task-line-name">{{ task.task.name }}</td>
+                    {% else %}
+                        <td class="task-line-name">{{ task.name }}</td>
+                    {% endif %}
+                    <td class="task-line-points">{{ task.max_points }}</td>
+                </tr>
+            {% endfor %}
+
+            {% for task in tasks %}
+                <tr class="task-line edit-task edit-task-tbody">
+                    <input type="hidden" name="task-line-id" value="{{ task.id }}">
+                    <input type="hidden" name="task-action" value="edit">
+                    <td class="task-line-sequence">
+                        <input type="number" name="task-sequence" value="{{ task.sequence }}">
+                    </td>
+                    <td class="task-line-name">
+                        <input type="text" name="task-name" value="{{ task.name }}">
+                    </td>
+                    <td class="task-line-points">
+                        <input type="number" name="task-points" value="{{ task.max_points }}">
+                    </td>
+                    <td>
+                        <i class="btn btn-sm btn-outline-danger bi bi-trash"></i>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        {% else %}
+
+            {% for task in tasks %}
+                <tr class="task-line edit-task-tbody">
+                    <input type="hidden" name="task-line-id" value="">
+                    <input type="hidden" name="task-action" value="create">
+                    <td class="task-line-sequence">
+                        <!-- Displaye the sequence, but do not make it look like an input -->
+                        <label for="task-sequence">{{ task }}</label>
+                        <input type="hidden" name="task-sequence" value="{{ task }}">
+                    </td>
+                    <td class="task-line-name">
+                        <input type="text" name="task-name" placeholder="Task name...">
+                    </td>
+                    <td class="task-line-points">
+                        <input type="number" name="task-points" placeholder="Max points...">
+                    </td>
+                    <td>
+                        <i class="btn btn-sm btn-outline-danger bi bi-trash"></i>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-outline-primary task-tbody edit-tasks-button">Edit tasks</button>
+    <button type="button" class="btn btn-primary edit-task add-new-task-button">Add Task</button>
+    <input type="submit" value="Save Tasks" class="btn {% if tasks.0 != 1 %}edit-task{% endif %} btn-success" id="save-task-changes-button">
+    <button type="button" class="btn btn-danger edit-task cancel-task-changes-button">Cancel</button>
+</form>
+
+{% else %}
+
+<form action="{% url 'make_sheets' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ page }}">
+    {% if list_for != 'generic' %}
+        <input type="hidden" name="name" value="{{ list_for.id }}">
+        <div class="edit-task">
+            <label for="group-{{ list_for.id }}-use-generic">Use Generic Sheet</label>
+            <input type="checkbox" name="group-{{ list_for.id }}-use-generic" id="bunk-{{ list_for.id }}-use-generic" {% if list_for.use_generic_sheet %}checked{% endif %}><br>
+        </div>
+    {% else %}
+        <input type="hidden" name="name" value="generic">
+    {% endif %}
+
+    <table class="table table-striped">
+        <thead>
+            {% if list_for != 'generic' %}
+                <th>Active</th>
+            {% endif %}
+            <th>Sequence</th>
+            <th>Task</th>
+            <th>Points</th>
+            <th>Input Type</th>
+        </thead>
+        <tbody>
+
+            {% for line in tasks %}
+                <tr class="task-line task-tbody">
+                    {% if list_for != 'generic' %}
+                        <td class="task-line-active">
+                            {% if line.active == 'True' %}
+                                <i class="bi bi-check-square"></i>
+                            {% else %}
+                                <i class="bi bi-square"></i>
+                            {% endif %}
+                            </td>
+                    {% endif %}
+                    <td class="task-line-sequence">{{ line.sequence }}</td>
+                    <td class="task-line-name">{{ line.name }}</td>
+                    <td class="task-line-points">{{ line.max_points }}</td>
+                    <td class="task-line-input-type">{{ line.points_type }}</td>
+                </tr>
+            {% endfor %}
+
+            {% for line in tasks %}
+                <tr class="task-line edit-task edit-task-tbody">
+                    <input type="hidden" name="task-line-id" value="{{ line.task_id }}">
+                    <input type="hidden" name="task-action" value="edit">
+                    {% if list_for != 'generic' %}
+                        <td class="task-line-active">
+                        <input type="checkbox" name="task-active-checkbox" {% if line.active == 'True' %}checked{% endif %} class="non-generic">
+                        <input type="hidden" name="task-active" value="{{ line.active }}">
+                        </td>
+                    {% endif %}
+                    <td class="task-line-sequence">
+                        <input type="number" name="task-sequence" data-ovalue="{{ line.sequence }}" value="{{ line.sequence }}" class="non-generic">
+                    </td>
+                    <td class="task-line-name">
+                        {% if task.group %}
+                            <input type="text" name="task-name" value="{{ line.name }}" class="non-generic">
+                        {% else %}
+                            <label for="task-name">{{ line.name }}</label>
+                            <input type="hidden" name="task-name" value="{{ line.name }}">
+                        {% endif %}
+                    </td>
+                    <td class="task-line-points">
+                        <input type="number" name="task-points" value="{{ line.max_points }}" class="non-generic">
+                    </td>
+                    <td class="task-line-input-type">
+                        <select id="input-type-{{ blank_line.task.id }}" name="task-input-type" class="non-generic">
+                            <option value="checkbox">Checkbox</option>
+                            <option value="custom" {% if line.points_type == 'custom' %}selected{% endif %}>Select Number</option>
+                        </select>
+                    </td>
+                    <!-- <td>
+                        <i class="btn btn-sm btn-outline-danger bi bi-trash"></i>
+                    </td> -->
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-outline-primary task-tbody edit-tasks-button">Edit tasks</button>
+    {% if list_for != 'generic' %}
+        <button type="button" class="btn btn-primary edit-task add-new-task-button" value="{{ list_for }}">Add Task</button>
+    {% endif %}
+    <input type="submit" value="Save Changes" class="btn btn-success edit-task" id="save-task-changes-button">
+    <button type="button" class="btn btn-danger edit-task cancel-task-changes-button">Cancel</button>
+</form>
+
+{% endif %}

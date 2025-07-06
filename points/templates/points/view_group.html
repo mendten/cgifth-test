@@ -1,0 +1,50 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}View Bunks/Classes{% endblock %}
+
+{% block body_two %}
+<h4>View Bunk and Class lists</h4>
+<p><a href="{% url 'edit_group' %}">Edit Bunks and Classes</a></p>
+<p><a href="{% url 'print_profiles' %}">View and print all camper profiles</a></p>
+<hr>
+
+<h4>Bunks</h4>
+<div class="row">
+    {% for bunk in bunks %}
+        <div class="col view-group-list">
+            <h5>{{ bunk.name|title }}</h5>
+            <h6>
+            {% for c in bunk.staff.all %}
+                {{ c }} {% if not forloop.last %}& {% endif %}
+            {% endfor %}
+            </h6>
+            <p>
+            {% for camper in bunk.bunk_camper.all|dictsort:'last_name' %}
+                <a href="{% url 'profile' camper.profile_link %}">{{ camper }}</a><br>
+            {% endfor %}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+<hr>
+<h4>Classes</h4>
+<div class="row">
+    {% for class in classes %}
+        <div class="col view-group-list">
+            <h5>{{ class.name|title }}</h5>
+            {% for t in class.staff.all %}
+                <h6>{{ t }}</h6>
+            {% endfor %}
+            <p>
+            {% for camper in class.class_camper.all|dictsort:'last_name' %}
+                <a href="{% url 'profile' camper.profile_link %}">{{ camper }}</a><br>
+            {% endfor %}
+            </p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

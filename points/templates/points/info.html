@@ -1,0 +1,107 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Info{% endblock %}
+
+{% block header %}
+    <a href="{% url 'logout' %}" class="navbar-link logout">Logout <span class="BH">ב"ה</span></a>
+{% endblock %}
+
+{% block body_two %}
+    <h4>Session Information <i class="btn btn-sm btn-outline-primary bi bi-pencil"></i></h4>
+    <div id="info-view">
+        <div id="max-points">
+            <h5>Max Points Per Day</h5>
+            <strong>Bunk Points:</strong> {{ info.max_bunk_points }}<br>
+            <strong>Bunk Bonuses:</strong> {{ info.max_bunk_bonus }}<br>
+            <strong>Class Points:</strong> {{ info.max_class_points }}<br>
+            <strong>Class Bonuses:</strong> {{ info.max_class_bonus }}<br>
+        </div>
+        <br>
+        <div id="ranks">
+            <h5>Ranks</h5>
+            {% if ranks %}
+                {% for rank in ranks %}
+                    <strong>{{ rank.name }}:</strong> {{ rank.lower_bound }}-{{ rank.upper_bound }}<br>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No ranks have been set.</p>
+            {% endif %}
+        </div>
+        <br>
+        <div id="weeks">
+            <h5>Weeks</h5>
+            <p class="text-muted">Note: all 'weeks' are the date that the week ends.</p>
+            <strong>Start Date:</strong>  {{ info.start_date }}<br>
+            {% for week in weeks %}
+                <strong>End of week {{ forloop.counter }}:</strong> {{ week }}<br>
+            {% endfor %}
+        </div>
+        <br>
+    </div>
+    <div id="info-edit">
+        <form action="{% url 'info' %}" method="post">
+            {% csrf_token %}
+        <div id="max-points">
+            <h5>Max Points Per Day</h5>
+            <label for="max-bunk"><strong>Bunk Points:</strong></label> 
+            <input type="number" min="0" max="99" name="max-bunk" id="max-bunk" value="{{ info.max_bunk_points }}"><br>
+            <label for="max-bunk-bonus"><strong>Bunk Bonus:</strong></label> 
+            <input type="number" min="0" max="99" name="max-bunk-bonus" id="max-bunk-bonus" value="{{ info.max_bunk_bonus }}"><br>
+            <label for="max-class"><strong>Class Points:</strong></label> 
+            <input type="number" min="0" max="99" name="max-class" id="max-class" value="{{ info.max_class_points }}"><br>
+            <label for="max-class-bonus"><strong>Class Bonus:</strong></label> 
+            <input type="number" min="0" max="99" name="max-class-bonus" id="max-class-bonus" value="{{ info.max_class_bonus }}"><br>
+        </div>
+        <br>
+        <div id="ranks">
+            <h5>Ranks</h5>
+            {% if ranks %}
+                <p class="text-muted">To delete a rank, clear any of it's fields (title, from, to)</p>
+                {% for rank in ranks %}
+                    <input type="hidden" name="rank-id" value="{{ rank.id }}">
+                    <label for="rank-{{ rank }}">Rank Title:</label>
+                    <input type="text" name="rank-{{ rank.id }}" value="{{ rank }}">
+                    <label for="{{ rank }}-lower">From:</label>
+                    <input type="number" name="lower-{{ rank.id }}" id="{{ rank }}-lower" min="0" max="9999" value="{{ rank.lower_bound }}">
+                    <label for="{{ rank }}-upper">To:</label>
+                    <input type="number" name="upper-{{ rank.id }}" id="{{ rank }}-upper" min="0" max="9999" value="{{ rank.upper_bound }}">
+                    <br>
+                {% endfor %}
+            {% endif %}
+            <div id="new-rank-template" style="display: none;">
+                <span class="form-group">
+                <label for="new-rank-title">New Rank Title</label>
+                <input type="text" class="rank-input" name="new-rank-title" value="">
+                <label for="new-rank-lower">From:</label>
+                <input type="number" class="rank-input" name="new-rank-lower" id="new-rank-lower" min="0" max="9999">
+                <label for="new-rank-upper">To:</label>
+                <input type="number" class="rank-input" name="new-rank-upper" id="new-rank-upper" min="0" max="9999">
+                <br>
+                </span>
+            </div>
+            <div id="new-ranks"></div>
+
+            <button type="button" class="btn btn-sm btn-outline-primary" id="add-rank">Add Rank</button>
+        </div>
+        <br>
+        <div id="weeks">
+            <h5>Weeks</h5>
+            <p class="text-muted">Note: all 'weeks' are the date that the week ends.</p>
+            <label for="start-date"><strong>Start Date:</strong></label>
+            <input type="date" name="start-date" id="start-date" value="{{ info.start_date|date:'Y-m-d' }}"><br>
+            {% for week in weeks %}
+                <label for="week-{{ forloop.counter }}"><strong>End of week {{ forloop.counter }}:</strong></label>
+                <input type="date" name="week-{{ forloop.counter }}" id="week-{{ forloop.counter }}" value="{{ week|date:'Y-m-d' }}"><br>
+            {% endfor %}
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" id="save">Save</button>
+        <button type="button" class="btn btn-danger" id="cancel">Cancel</button>
+    </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/info.js' %}"></script>
+{% endblock %}

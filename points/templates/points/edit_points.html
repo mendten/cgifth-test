@@ -1,0 +1,86 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+{% load daily_chart %}
+
+{% block title %}Edit Charts{% endblock %}
+
+{% block header %}
+    <a href="{% url 'logout' %}" class="navbar-link logout">Logout <span class="BH">ב"ה</span></a>
+{% endblock %}
+
+{% block body_two %}
+<h4>View and Edit Points</h4>
+<div id="max-bonus" data-num="{{ max_bonus }}"></div>
+        <div style="display: inline-block">
+            <span id="bunk-class-toggler">
+                <button class="btn btn-sm btn-primary"  id="bunk-class-toggle">Toggle Bunk/Class</button>
+            </span>
+            <form method="get">
+            <span id="bunk-header" class="list">Bunk 
+                <select id="bunk-selector" name="id">
+                    <option value="none">------</option>
+                    {% for bunk in bunks %}
+                        <option value="{{ bunk.id }}">{{ bunk.name|title }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            <span id="class-header" class="list">Learning Class
+                <select id="class-selector" name="id" disabled>
+                    <option value="none">------</option>
+                    {% for lc in classes %}
+                        <option value="{{ lc.id }}">{{ lc.name|title }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            <span id="week-header">Week
+                <select id="week-selector" name="week">
+                    <option value="none">------</option>
+                    {% for week in weeks %}
+                        {% if not forloop.first %}
+                        <option value="{{ week|date:'Y-m-d' }}">{{ forloop.counter0 }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </span>
+            <span>
+                <button class="btn btn-sm btn-outline-success" id="view-charts">Go</button>
+            </span>
+            </form>
+            {% if current %}
+                <input type="hidden" id="current-week" value="{{ current }}">
+            {% endif %}
+        </div>
+        <hr>
+
+    {% if charts %}
+    <div id="header">
+        <h4>{{ group.name|title }}, {% for staff in staff %} {{ staff }} {% endfor %}</h4>
+    </div>
+    <div id="charts">
+        <div id="pick-day">
+            {% for day, details in charts.items %}
+                {% if not details.total or details.total == 0 %}
+                    <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                {% elif details.today %}
+                    <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} {% if details.total != 0 %}({{ details.total }}%){% endif %}</button>
+                {% elif details.total == 'late' %}
+                    <button class="btn btn-sm btn-outline-danger day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                {% elif details.total <= 60 %}
+                    <button class="btn btn-sm btn-outline-warning day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                {% else %}
+                    <button class="btn btn-sm btn-outline-success day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% for date, chart in charts.items %}
+            {% daily_chart request date chart group %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/edit_points.js' %}"></script>
+    <script src="{% static 'points/js/index_staff.js' %}"></script>
+{% endblock %}

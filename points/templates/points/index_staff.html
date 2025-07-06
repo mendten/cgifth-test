@@ -1,0 +1,109 @@
+{% extends 'points/base.html' %}
+{% load static %}
+{% load pwa %}
+{% load daily_chart %}
+
+{% block head %}
+{% progressive_web_app_meta %}
+{% endblock %}
+
+{% block title %}{{ group.name|title }}{% endblock %}
+
+{% block header %}
+    <a href="{% url 'logout' %}" class="navbar-link logout" id="staff-logout">Logout <span class="BH">ב"ה</span></a>
+{% endblock %}
+
+{% block body %}
+<div id="index-container">
+    <h1 style="color: white;">Hello</h1>
+    <div id="max-bonus" data-num="{{ max_bonus }}"></div>
+
+    <div id="header">
+        <h4>{{ user|title }}, {{ group.name|title }}</h4>
+    </div>
+
+    <div id="charts">
+        {% if charts %}
+            <div id="pick-day">            
+                <a href="{% url 'last_week' %}">Last 7 Days</a>
+                {% for day, details in charts.items %}
+                    {% if not details.total or details.total == 0 %}
+                        <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                    {% elif details.today %}
+                        <button class="btn btn-sm btn-outline-primary day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} {% if details.total != 0 %}({{ details.total }}%){% endif %}</button>
+                    {% elif details.total == 'late' %}
+                        <button class="btn btn-sm btn-outline-danger day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }}</button>
+                    {% elif details.total <= 60 %}
+                        <button class="btn btn-sm btn-outline-warning day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                    {% else %}
+                        <button class="btn btn-sm btn-outline-success day-selector" id="{{ day }}-btn" data-day="{{ day }}">{{ day|date:'l' }} ({{ details.total }}%)</button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% for date, chart in charts.items %}
+                {% daily_chart request date chart group %}
+            {% endfor %}
+            <hr>
+        {% else %}
+            <p>Camp is not currently in session.</p>
+        {% endif %}
+    </div>
+
+    <div class="right">
+        <div class="alert alert-info" role="alert">
+            {% for message in messages %}
+                <p class="mb-0"><strong>
+                {% if forloop.first %}
+                    All Staff
+                {% elif forloop.last %}
+                    Personal
+                {% else %}
+                    {{ message.group|title }}
+                {% endif %}
+                </strong> - <span class="text-muted">{{ message.date|date:"l, g:i A." }}</span><br>
+                    {{ message.text }}</p><br>
+            {% endfor %}
+        </div>
+
+        <h6>Send Feedback To HQ</h6>
+        <form method="post" action="{% url 'send_message' %}" >
+            {% csrf_token %}
+            <textarea name="message" id="message" cols="30" rows="4"></textarea>
+            <input class="btn btn-sm btn-outline-primary" type="submit" value="Send">
+        </form>
+        <hr>
+    </div>
+
+    {% if week_chart %}
+        <div class="index-chart wc-printarea">
+            <table class="table table-striped weekly-chart-table">
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                            <th class="col-{{ forloop.counter }} wc-border">{{ header|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for camper in week_chart %}
+                        <tr>
+                            {% for field, value in camper.items %}
+                                <td class="col-{{ forloop.counter }} wc-border {% if forloop.first %}wc-name{% endif %}">{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div id="footer">
+        <img src="{% static 'points/pngs/newcgiflogo.jpg' %}" alt="Camp Gan Israel Florida logo" id="newcgiflogo" class="logos">
+        <img src="{% static 'points/pngs/newthlogo.jpg' %}" alt="Tzivos Hashem logo" id="newthlogo" class="logos">
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/index_staff.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Detailed Points{% endblock %}
+
+{% block body_two %}
+    <div class="detailed-points-header">
+        <h4>Detailed Points</h4>
+        <form method="get" action="{% url 'detail_points' %}" class="form">
+        <span class="form-group">
+            <label for="type-selector">What type of numbers do you want to see?</label>
+            <select id="type-selector" name="group-type">
+                <option value="indiv">Individual</option>
+                <option value="bunk">Bunk</option>
+                <option value="learning_class">Learning Class</option>
+            </select><br>
+            <label for="stat-selector">Which Tasks do you want to see?</label>
+            <select id="stat-selector" name="stat-type">
+                <option value="all">All</option>
+                <option value="bunk">Counselor</option>
+                <option value="learning class">Learning Teacher</option>
+                <option value="camper">Camper</option>
+                <option value="co_lt">Counselor + Learning Teacher</option>
+                <option value="specific">Specific Tasks</option>
+            </select><br>
+            <div id="tasks-selector">
+                <label for="tasks">Hold down Ctrl to select multiple tasks</label>
+                <select multiple id="tasks" name="tasks">
+                    {% for id, name in task_selector.items %}
+                        <option value="{{ id }}">{{ name|title }}</option>
+                    {% endfor %}
+                </select><br>
+            </div>
+            <label for="range">What Weeks?</label>
+            <select id="range" name="range" multiple>
+                <option value="all">All</option>
+                {% for i in 'aaaaaaaa' %}
+                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                {% endfor %}
+            </select><br>
+        </span>
+        <input type="submit" class="btn btn-sm btn-success" value="Go">
+        </form>
+    </div>
+
+    {% if current_selection %}
+        <h6>{% for field, value in current_selection.items %}
+            {{ field }}: {{ value }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}</h6>
+    {% endif %}
+
+    {% if camper_totals and current_selection.Type == 'indiv' %}
+        <div style="overflow-x: auto;" class="printarea">
+        <table class="table table-striped checklist dp-checklist">
+            <thead>
+                <tr>
+                    <th>Camper</th>
+                    <th>Bunk</th>
+                    <th>Learning Class</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for camper, fields in camper_totals %}
+                    <tr>
+                        <td>{{ forloop.counter }}. {{ camper.last_name }}, {{ camper.first_name }}</td>
+                        <td>{{ camper.new_bunk.name }}</td>
+                        <td>{{ camper.new_class.name }}</td>
+                        <td>{{ fields.total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% elif camper_totals %}
+    <div style="overflow-x: auto;" class="printarea">
+        <table class="table table-striped checklist dp-checklist">
+            <thead>
+                <tr>
+                    <th>{{ current_selection.Type|title }}</th>
+                    <th>Average</th>
+                    <th>Total Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group, fields in camper_totals %}
+                    <tr>
+                        <td>{{ group }}</td>
+                        <td>{{ fields.average }}</td>
+                        <td>{{ fields.total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/detail_points.js' %}"></script>
+{% endblock %}

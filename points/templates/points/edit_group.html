@@ -1,0 +1,109 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Edit Bunks/Classes{% endblock %}
+
+{% block body_two %}
+    <div>
+        <h4>Edit Bunks/Classes</h4>
+        <p><a href="{% url 'view_group' %}">Back to Bunk and Class lists</a></p>
+        <table>
+            <thead>
+                <tr>
+                    <th id="bunk-class-toggler">
+                        <button class="btn btn-sm btn-primary" id="bunk-class-toggle">Toggle Bunk/Class</button>
+                    </th>
+                    <th id="bunk-header" class="list">Bunk 
+                        <select id="bunk-selector">
+                            <option value="none">------</option>
+                            {% for bunk in bunks %}
+                                <option value="{{ bunk.number }}">{{ bunk.name|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th id="class-header" class="list">Learning Class
+                        <select id="class-selector">
+                            <option value="none">------</option>
+                            {% for lc in classes %}
+                                <option value="{{ lc.number }}">{{ lc.name|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+        
+        {% for bunk in bunks %}
+        <form method="post" action="{% url 'edit_group' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove">
+            <div id="bunk-{{ bunk.number }}" class="checklist remove-list">
+                <h5>{{ bunk.name|title }}</h5>
+                <p>
+                    {% for counselor in bunk.staff.all %}
+                        <strong>{{ counselor|title }} {% if not forloop.last %}& {% endif %}</strong>
+                    {% endfor %}
+                </p>
+                    <input type="hidden" name="bunk" value="{{ bunk.number }}">
+                    {% for camper in bunk.bunk_camper.all|dictsort:'last_name' %}
+                        <input type="checkbox" value="{{ camper.id }}" name="camper"><label for="{{ camper.id }}">{{ camper.last_name }}, {{ camper.first_name }}</label><br>
+                    {% endfor %}
+                    <input type="submit" class="btn btn-outline-danger" value="Remove From Bunk">
+            </div>
+        </form>
+        {% endfor %}
+
+        {% for lc in classes %}
+        <form method="post" action="{% url 'edit_group' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove">
+            <div id="lc-{{ lc.number }}" class="checklist remove-list">
+                <h5>{{ lc.name|title }}</h5>
+                <p>
+                    {% for counselor in lc.staff.all %}
+                        <strong>{{ counselor|title }}</strong>
+                    {% endfor %}
+                </p>
+                    <input type="hidden" name="lc" value="{{ lc.number }}">
+                    {% for camper in lc.class_camper.all|dictsort:'last_name' %}
+                        <input type="checkbox" value="{{ camper.id }}" name="camper"> <label for="{{ camper.id }}">{{ camper.last_name }}, {{ camper.first_name }}</label><br>
+                    {% endfor %}
+                    <input type="submit" class="btn btn-outline-danger" value="Remove From Class">
+            </div>
+        </form>
+        {% endfor %}
+       
+        <div id="fcb" class="list">
+            <form method="post" action="{% url 'edit_group' %}" class="add-list">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="group-id" id="bu">
+            <h6>Campers that are not in bunks</h6>
+            <input type="hidden" name="group" value="bunk">
+                {% for camper in free_campers_bunk|dictsort:'last_name' %}
+                    <input type="checkbox" value="{{ camper.id }}" name="camper"> <label for="{{ camper.id }}">{{ camper.last_name }}, {{ camper.first_name }}</label><br>
+                {% endfor %}
+                <input type="submit" class="btn btn-outline-success" value="Add To Bunk">
+            </form>
+        </div>
+
+        <div id="fcl" class="list">
+            <form method="post" action="{% url 'edit_group' %}" class="add-list">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="group-id" id="lc">
+            <h6>Campers that are not in learning classes</h6>
+            <input type="hidden" name="group" value="lc">
+                {% for camper in free_campers_lc %}
+                    <input type="checkbox" value="{{ camper.id }}" name="camper"> <label for="{{ camper.id }}">{{ camper.last_name }}, {{ camper.first_name }}</label><br>
+                {% endfor %}
+                <input type="submit" class="btn btn-outline-success" value="Add To Class">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/edit_group.js' %}"></script>
+{% endblock %}

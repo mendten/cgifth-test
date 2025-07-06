@@ -1,0 +1,72 @@
+{% extends 'points/base.html' %}
+{% load static %}
+
+{% block title %}{{ camper }} Profile{% endblock %}
+
+{% block header %}
+{% if request.user.position == 'admin' %}
+        <a href="{% url 'view_group' %}" class="btn btn-sm btn-outline-primary">Back to Admin</a>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+    <h1 style="color: white;">hello</h1>
+    <div id="profile-page" class="printarea">
+        {% if error %}
+            <p role="alert" class="alert alert-danger">{{ error }}</p>
+        {% else %}
+        <div class="profile-head">
+            <div class="pic">
+                {% if camper.profile_pic != '' %}
+                    <img id="profile-pic" height="160px" src="{{ camper.profile_pic }}" alt="picture of camper">
+                {% else %}
+                    <img id="profile-pic" height="160px" src="{% static 'points/pngs/blank-profile.png' %}" alt="no image available">
+                {% endif %}
+                <br>
+            </div>
+            <h4>{{ camper }} <span class="profile-bH">B"H</span></h4>
+            <h6>{{ camper.rank }}</h6>
+            <h6>Total Points: {{ camper.total_points }}</h6>
+            <h6>Points until {{ c.next_rank }}: {{ c.ptnr }}</h6>
+            {% if request.user.position == 'admin' %}
+            <form action="{% url 'profile' id_str %}" method="post" enctype="multipart/form-data" class="print-hide">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input class="form-control-sm" type="file" id='upload' name="profile-pic-upload">
+                </div>
+                <input class="btn btn-sm btn-outline-primary" id="save-btn" type="submit" disabled value="Save">
+            </form>
+            {% endif %}
+        </div>
+        <div id="graphs">
+            <div id="totals-graph" style="display: none;">
+                <p class="text-muted text-center">Chart may not appear properly on mobile devices.</p>
+                <canvas id="myChart"></canvas>
+                <div style="display: none;" id="data">
+                    {% for task, deets in c.stats.items %}
+                        <span class="task">{{ task }} ({{deets.percent}}%)</span>
+                        <span class="percent">{{ deets.percent }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="doughnuts"></div>
+        </div>
+        
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'points/js/profile.js' %}"></script>
+
+    {% if request.user.position == 'admin' %}<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const upload = document.getElementById('upload');
+            const submit = document.querySelector('[type="submit"]');
+            upload.addEventListener('change', () => {
+                submit.removeAttribute('disabled');
+            });
+        });
+    </script>{% endif %}
+{% endblock %}

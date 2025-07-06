@@ -1,0 +1,25 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Add Staff{% endblock %}
+
+{% block body_two %}
+    <h4>Add Staff Members</h4>
+    <div>
+        <form id="new-group" method="POST" action="{% url 'add_staff' %}">
+            {% csrf_token %}
+            <label for="position">Position</label>
+            <select name="position" id="position">
+                <option value="counselor">Counselor</option>
+                <option value="teacher">Learning Teacher</option>
+            </select><br>
+            <label for="names">Enter Names: <span class="text-muted">Input a list of names, each on a new line. For example:<br>
+                Avraham Fried<br>
+                Mordechai Ben David<br>
+                Moshe Laufer</span></label><br>
+            <textarea name="names" id="names" cols="30" rows="10"></textarea>
+            <br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+{% block title %}Campers Profiles{% endblock %}
+
+{% block body_two %}
+<div>
+<h4>Campers Profiles</h4>
+<p><a href="{% url 'view_group' %}">Go Back</a></p>
+<p>Press Control + p to print</p>
+</div>
+<hr>
+<div id="profile-page" class="printarea">
+    {% for camper, info in campers.items %}
+    <div {% if forloop.first %}id="first"{% else %} class="page-break" {% endif %}>
+        <div class="profile-head">
+            <div class="pic">
+                {% if camper.profile_pic != '' %}
+                    <img id="profile-pic" height="160px" src="{{ camper.profile_pic }}" alt="picture of camper">
+                {% else %}
+                    <img id="profile-pic" height="160px" src="{% static 'points/pngs/blank-profile.png' %}" alt="no image available">
+                {% endif %}
+                <br>
+            </div>
+            <h4>{{ camper }} <span class="profile-bH">B"H</span></h4>
+            <h6>{{ camper.rank }}</h6>
+            <h6>Total Points: {{ camper.total_points }}</h6>
+            <h6>Points until {{ info.next_rank }}: {{ info.ptnr }}</h6>
+        </div>
+        <div id="graphs">
+            <div id="totals-graph" style="display: none;">
+                <div style="display: none;" id="data">
+                    <input type="hidden" value="{{ camper.id }}" class="id-list">
+                    {% for task, deets in info.stats.items %}
+                        <span class="task-{{ camper.id }}">{{ task }} ({{deets.percent}}%)</span>
+                        <span class="percent-{{ camper.id }}">{{ deets.percent }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="doughnuts-{{ camper.id }}"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'points/js/print_profiles.js' %}"></script>
+{% endblock %}

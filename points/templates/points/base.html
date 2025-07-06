@@ -1,0 +1,33 @@
+{% load static %}
+{% load pwa %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Base{% endblock %}</title>
+        <meta name="viewport" content="initial-scale=1, width=device-width">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"></script>
+        <link rel="stylesheet" href="{% static 'points/styles.css' %}">
+        <link href="{% static 'points/pngs/avatar.png' %}" rel="icon">
+        {% block head %}
+        {% endblock %}
+        {% block scripts %}
+        {% endblock %}
+    </head>
+    <body>
+        <nav class="bg-light border navbar navbar-expand-md navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand logo" href="{% url 'index' %}">
+                    <img class="d-inline-block align-top" src="{% static 'points/pngs/newcgiflogo.jpg' %}" height="30px" alt="CGI Florida logo">
+                    Tzivos Hashem
+                </a>
+                {% block header %}
+                {% endblock %}
+            </div>
+        </nav>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

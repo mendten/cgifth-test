@@ -1,0 +1,73 @@
+// Service Worker
+
+// Serve from Cache
+self.addEventListener("fetch", event => {
+    event.respondWith(
+        networkFirst(event)
+    )
+});
+
+// Network with cache fallback
+async function networkFirst(event) {
+    // first try network
+    try {
+        const response = await fetch(event.request);
+        // if we got a response
+        var copy = response.clone();
+        caches.open(staticCacheName)
+            .then(cache => {
+                if (event.request.method === 'GET') {
+                    console.log('caching', event.request.url)
+                    cache.put(event.request, copy);
+                }
+            });
+        return response;
+    } catch {
+        try {
+            const response_1 = await caches.match(event.request);
+            return response_1 || fetch(event.request);
+        } catch {
+            return await caches.match('/offline/');
+        }
+    }
+}
+
+// Serve from Cache
+self.addEventListener("fetch", event => {
+    event.respondWith(
+        networkFirst(event)
+    )
+});
+
+
+// Network with cache fallback
+async function networkFirst(event) {
+    // first try network
+    try {
+        const response = await fetch(event.request);
+        return response;
+    } catch {
+        try {
+            const response_1 = await caches.match(event.request);
+            return response_1;
+        } catch {
+            return await caches.match('/offline/');
+        }
+    }
+}
+
+
+// Stats for graphs
+stats = {}
+
+(pull all campers and all of there sheets. then loop over each sheet)
+
+if sheet.name in ['bunk', 'learning class']:
+    for task, point in dict(sheet.total_points()).items():
+        if task not in stats:
+            stats[task] = {'max': 1, 'done': 0, 'points': int(point)}
+        else:
+            stats[task]['max'] += 1
+            stats[task]['points'] += int(point)
+        if int(point) > 0:
+            stats[task]['done'] += 1

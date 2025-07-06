@@ -1,0 +1,76 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+
+
+{% block title %}Weekly Chart{% endblock %}
+
+{% block body_two %}
+    <h4>Weekly Chart</h4>
+    {% if bunk_totals %}
+    <form method="get" action="{% url 'weekly_chart' %}">
+        <label for="week">Week:</label>
+        <select name="week" id="week-selector">
+            {% for i in 'aaaaaaaa' %}
+                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <input type="hidden" id="week" value="{{ week }}">
+    <h5>Week {{ week }}</h5>
+    <div id="column-toggle" class="row">
+        {% for header in headers %}
+        <div class="col">
+        <label class="switch">
+            <input type="checkbox" checked class="show-col" data-column="col-{{ forloop.counter }}">
+            <span class="slider round"></span>
+          </label>
+            <p>{{ header|title }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    
+    <div class="container printarea wc-printarea">
+        {% for bunk, campers in bunk_totals.items %}
+        <div {% if forloop.first %}id="first"{% else %} class="page-break" {% endif %}>
+            <div class="text-center">
+            
+            <h3>{{ bunk.name|upper }}</h3>
+                <h5>COUNSELORS: {% for c in bunk.staff.all %}
+                {{ c|upper }} {% if not forloop.last %}& {% endif %}
+                {% endfor %}</h5>
+            </div>
+            <table class="table table-striped weekly-chart-table">
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                            <th class="col-{{ forloop.counter }} wc-border">{{ header|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fields in campers %}
+                        <tr>
+                            {% for field, value in fields.items %}
+                                <td class="col-{{ forloop.counter }} wc-border {% if forloop.first %}wc-name{% endif %}">{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="footer">
+                <img src="{% static 'points/pngs/newcgiflogo.jpg' %}" alt="Camp Gan Israel Florida logo" id="newcgiflogo" width="100px;" class="left-pic">
+                <img src="{% static 'points/pngs/newthlogo.jpg' %}" alt="Tzivos Hashem logo" id="newthlogo" width="100px;">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Camp has not started yet.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/weekly_chart.js' %}"></script>
+{% endblock %}

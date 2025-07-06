@@ -1,0 +1,129 @@
+{% extends 'points/admin.html' %}
+{% load static %}
+{% load daily_chart %}
+
+{% block title %}Weekly Missions{% endblock %}
+
+{% block body_two %}
+    <div>
+        <h4>Enter Weekly Mission Points</h4>
+        <div style="display: inline-block">
+            <span id="bunk-header" class="list">Bunk 
+                <select class="bunk-week-selector" id="bunk-selector" name="id">
+                    {% for bunk in bunks %}
+                        <option value="{{ bunk.id }}">{{ bunk.name|title }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            <span id="week-header">Week
+                <select class="bunk-week-selector" id="week-selector" name="week">
+                    {% for week in weeks %}
+                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            {% if current %}
+                <input type="hidden" id="current-week" value="{{ current }}">
+            {% endif %}
+        </div>
+        <hr>
+
+        {% for bunk, weeks in charts.items %}
+        <div id="bunk-{{ bunk.id }}" class="bunk-view">
+            <h4>{{ bunk.name }}</h4>
+            <h5>Staff: 
+                {% for counselor in bunk.staff.all %}
+                    <strong>{{ counselor|title }} {% if not forloop.last %}& {% endif %}</strong>
+                {% endfor %}
+            </h5>
+            {% for week, campers in weeks.items %}
+                <div class="week-view week-{{ week }}">
+                    <h6>Week: {{ week }}</h6>
+                    <form method="post" action="{% url 'enter_points' %}">
+                        {% csrf_token %}
+                        <table class="table table-striped points-header" id="bunk-{{ bunk.number }}">
+                            <thead>
+                                <tr id="camper-names">
+                                    <th class="left-col">Task</th>
+                                    {% for camper in campers %}
+                                        <th>
+                                            <input class='flip-back' type="checkbox" name="camper" value="{{ camper.id }}"><span class="camper-name-chart">
+                                            {{ camper|title }}
+                                            </span>
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="left-col">Weekly Total</td>
+                                    <input type="hidden" name="task" value="mission">
+                                    {% for camper, points in campers.items %}
+                                        <td>
+                                            {{ points }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            {% endfor %}
+
+        </div>
+        {% endfor %}
+
+<!-- 
+        <div style="display: hidden">
+        {% for bunk in bunks %}
+        <form method="post" action="{% url 'enter_points' %}">
+            {% csrf_token %}
+            <div id="bunk-{{ bunk.number }}" class="checklist remove-list">
+                <p>
+                    {% for counselor in bunk.staff.all %}
+                        <strong>{{ counselor|title }} {% if not forloop.last %}& {% endif %}</strong>
+                    {% endfor %}
+                </p>
+                <label for="week-selector">Week: </label>
+                <select id="week" name="week">
+                    {% for week in weeks %}
+                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+                <table class="table table-striped points-header" id="bunk-{{ bunk.number }}">
+                    <thead>
+                        <tr id="camper-names">
+                            <th class="left-col">Task</th>
+                            {% for camper in bunk.bunk_camper.all %}
+                                <th class="camper-name-chart">
+                                    <input class='flip-back' type="checkbox" name="camper" value="{{ camper.id }}">
+                                    {{ camper|title }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="left-col">Weekly Total</td>
+                            <input type="hidden" name="task" value="mission">
+                            {% for camper in bunk.bunk_camper.all %}
+                                <td>
+                                    <input style="width: 25px;" type="tel" min="0" max="99" name="{{ camper.id }}-mission" id="{{ camper }}-mission">
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+                <input type="submit" class="btn btn-sm btn-primary" value="Submit">
+            </div>
+        </form>
+        {% endfor %}
+    </div> -->
+       
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'points/js/enter_points.js' %}"></script>
+{% endblock %}
